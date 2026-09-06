@@ -1,0 +1,16 @@
+{% extends "chores/base.html" %}
+
+{% block title %}{{ title }} · Household Chores{% endblock %}
+
+{% block content %}
+<section class="form-shell">
+<a class="back-link" href="{% url 'chore_list' %}">← Back to chores</a>
+<div class="form-heading"><p class="eyebrow">CHORE DETAILS</p><h2>{{ title }}</h2><p>Set a clear task and an optional due date for the household.</p></div>
+<form class="card form-card" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-actions"><button type="submit">Save chore</button><a class="button button-secondary" href="{% url 'chore_list' %}">Cancel</a></div>
+</form>
+</section>
+<style>.form-shell { max-width:680px; margin:auto; } .back-link { display:inline-block; margin-bottom:1.5rem; color:var(--primary); font-size:.9rem; font-weight:700; text-decoration:none; } .form-heading p:last-child { color:var(--muted); } .form-card { padding:1.5rem; } .form-actions { display:flex; gap:.75rem; margin-top:1.5rem; } </style>
+{% endblock %}

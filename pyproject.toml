@@ -1,0 +1,18 @@
+[project]
+name = "household-chores-tool"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "devotuoma", email = "erickodhis2000@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "django>=5.2.17",
+]
+
+[project.scripts]
+household-chores-tool = "household_chores_tool:main"
+
+[build-system]
+requires = ["uv_build>=0.12.10,<0.13.0"]
+build-backend = "uv_build"

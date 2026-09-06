@@ -1,0 +1,70 @@
+{% extends "chores/base.html" %}
+
+{% block title %}Chores · Household Chores{% endblock %}
+
+{% block content %}
+<section class="list-intro">
+    <div>
+        <p class="eyebrow">HOME DASHBOARD</p>
+        <h2>Keep the household moving</h2>
+        <p class="intro-copy">A clear view of what needs doing, who owns it, and what is already finished.</p>
+    </div>
+    <a class="button" href="{% url 'chore_create' %}">+ Add a chore</a>
+</section>
+
+{% if chores %}
+<section class="card table-card">
+<div class="table-heading"><strong>Chore board</strong><span>{{ chores|length }} chore{{ chores|length|pluralize }}</span></div>
+<div class="table-wrap"><table>
+    <thead>
+        <tr>
+            <th>Chore</th>
+            <th>Due date</th>
+            <th>Assignee</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for chore in chores %}
+        {% with assignment=chore.current_assignment %}
+        <tr>
+            <td><strong>{{ chore.name }}</strong>{% if chore.description %}<span class="description">{{ chore.description }}</span>{% endif %}</td>
+            <td>{{ chore.due_date|default:"—" }}</td>
+            <td>{% if assignment %}{{ assignment.assignee.name }}{% else %}Unassigned{% endif %}</td>
+            <td>
+                {% if assignment %}
+                    <span class="status {% if assignment.is_complete %}status-complete{% else %}status-pending{% endif %}">
+                        {% if assignment.is_complete %}Complete{% else %}Pending{% endif %}
+                    </span>
+                {% else %}
+                    <span class="status status-unassigned">Unassigned</span>
+                {% endif %}
+            </td>
+            <td class="actions">
+                <a class="text-action" href="{% url 'chore_edit' chore.pk %}">Edit</a>
+                <a class="text-action" href="{% url 'assign_chore' chore.pk %}">Assign</a>
+                {% if assignment %}
+                <form method="post" action="{% url 'mark_complete' assignment.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button class="button-small" type="submit">{% if assignment.is_complete %}Mark pending{% else %}Complete{% endif %}</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endwith %}
+        {% endfor %}
+    </tbody>
+</table></div></section>
+{% else %}
+<section class="card empty-state">
+    <span class="empty-icon" aria-hidden="true">✦</span>
+    <h2>Your board is ready</h2>
+    <p>No chores yet. Add the first one and assign it to a household member.</p>
+    <a class="button" href="{% url 'chore_create' %}">Create first chore</a>
+</section>
+{% endif %}
+<style>
+    .list-intro { display:flex; align-items:end; justify-content:space-between; gap:1.5rem; margin-bottom:1.5rem; } .eyebrow { margin-bottom:.45rem; color:var(--primary); font-size:.75rem; font-weight:800; letter-spacing:.12em; } .intro-copy { max-width:38rem; margin-bottom:0; color:var(--muted); } .table-heading { display:flex; justify-content:space-between; padding:1.1rem 1.25rem; border-bottom:1px solid var(--line); } .table-heading span { color:var(--muted); font-size:.88rem; } .table-wrap { overflow-x:auto; } table { width:100%; border-collapse:collapse; } th { padding:.8rem 1.25rem; color:var(--muted); background:#fafbfe; font-size:.72rem; letter-spacing:.06em; text-align:left; text-transform:uppercase; } td { padding:1rem 1.25rem; border-top:1px solid var(--line); vertical-align:middle; } .description { display:block; max-width:20rem; margin-top:.2rem; overflow:hidden; color:var(--muted); font-size:.86rem; text-overflow:ellipsis; white-space:nowrap; } .status { display:inline-flex; padding:.28rem .55rem; border-radius:999px; font-size:.78rem; font-weight:750; } .status-complete { color:var(--success); background:#e8f7ef; } .status-pending { color:var(--warning); background:#fff3df; } .status-unassigned { color:#536075; background:#edf0f5; } .actions { white-space:nowrap; } .text-action { margin-right:.65rem; color:var(--primary); font-size:.88rem; font-weight:700; text-decoration:none; } .empty-state { max-width:38rem; padding:3.5rem 2rem; text-align:center; } .empty-state h2 { margin-bottom:.5rem; } .empty-state p { margin:0 auto 1.5rem; color:var(--muted); } .empty-icon { display:grid; width:3.5rem; height:3.5rem; place-items:center; margin:0 auto 1rem; border-radius:50%; color:var(--primary); background:#e9e8ff; font-size:1.5rem; } @media(max-width:640px) { .list-intro { align-items:flex-start; flex-direction:column; } th,td { padding:.75rem; } th:nth-child(2),td:nth-child(2) { display:none; } .actions { min-width:11rem; } }
+</style>
+{% endblock %}
